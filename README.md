@@ -1,4 +1,4 @@
-# AI-BinPackingProblem-A1
+# AI-BinPackingProblem-A1-Code-Structure
 Population Initialization: The population is initialized randomly, with each individual being a binary string of length string_length.
 
 Fitness Function (fitness): Calculates the fitness of an individual as the sum of its bits. The aim is to maximize this sum, which means having as many 1s in the string as possible.
