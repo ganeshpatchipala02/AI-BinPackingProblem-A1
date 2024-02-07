@@ -1,0 +1,177 @@
+import numpy as np
+import random
+
+bpp_1_item_weights = [
+    (200, 3), (199, 1), (198, 2), (197, 2), (194, 2), (193, 1), (192, 1), (191, 3),
+    (190, 2), (189, 1), (188, 2), (187, 2), (186, 1), (185, 4), (184, 3), (183, 3),
+    (182, 3), (181, 2), (180, 1), (179, 4), (178, 1), (177, 4), (175, 1), (174, 1),
+    (173, 2), (172, 1), (171, 3), (170, 2), (169, 3), (167, 2), (165, 2), (164, 1),
+    (163, 4), (162, 1), (161, 1), (160, 2), (159, 1), (158, 3), (157, 1), (156, 6),
+    (155, 3), (154, 2), (153, 1), (152, 3), (151, 2), (150, 4)
+]
+bpp_2_item_weights = [
+    (200, 2), (199, 4), (198, 1), (197, 1), (196, 2), (195, 2), (194, 2), (193, 1),
+    (191, 2), (190, 1), (189, 2), (188, 1), (187, 2), (186, 1), (185, 2), (184, 5),
+    (183, 1), (182, 1), (181, 3), (180, 2), (179, 2), (178, 1), (176, 1), (175, 2),
+    (174, 5), (173, 1), (172, 3), (171, 1), (170, 4), (169, 2), (168, 1), (167, 5),
+    (165, 2), (164, 2), (163, 3), (162, 2), (160, 2), (159, 2), (158, 2), (157, 4)
+]
+bpp_3_item_weights = [
+    (200, 1), (199, 2), (197, 2), (196, 2), (193, 3), (192, 2), (191, 2), (190, 2),
+    (189, 3), (188, 1), (187, 1), (185, 3), (183, 2), (182, 1), (181, 3), (180, 3),
+    (179, 3), (178, 1), (177, 5), (176, 2), (175, 5), (174, 4), (173, 1), (171, 3),
+    (170, 1), (169, 2), (168, 5), (167, 1), (166, 4), (165, 2), (163, 1), (162, 2),
+    (161, 2), (160, 3), (159, 2), (158, 2), (157, 1), (156, 3), (155, 3), (154, 1),
+    (153, 2), (152, 3), (151, 2), (150, 1)
+]
+bpp_4_item_weights = [
+    (200, 3), (199, 5), (198, 4), (197, 1), (195, 1), (193, 4), (192, 1), (188, 1),
+    (187, 1), (186, 3), (185, 3), (184, 2), (183, 2), (182, 1), (181, 1), (180, 3),
+    (179, 2), (178, 6), (177, 2), (176, 4), (175, 1), (173, 4), (172, 4), (170, 1),
+    (169, 3), (168, 4), (167, 1), (165, 3), (164, 1), (163, 2), (162, 4), (161, 1),
+    (160, 3), (159, 3), (158, 1), (157, 3), (155, 2), (154, 3), (153, 1), (152, 3),
+    (151, 1), (150, 1)
+]
+bpp_5_item_weights = [
+    (200, 5), (199, 2), (198, 2), (197, 2), (196, 1), (195, 3), (194, 2), (193, 2), 
+    (192, 4), (191, 2), (190, 4), (188, 3), (187, 2), (186, 2), (185, 1), (184, 1), 
+    (183, 1), (182, 1), (181, 3), (180, 1), (178, 3), (177, 2), (176, 2), (174, 1), 
+    (173, 1), (172, 1), (171, 3), (168, 2), (167, 1), (165, 1), (164, 1), (163, 1), 
+    (162, 3), (161, 3), (160, 3), (159, 2), (158, 3), (157, 3), (156, 2), (155, 5), 
+    (154, 3), (153, 3), (151, 5), (150, 2)
+]
+bin_capacity =1000
+# Creating problem instances
+bpp_1 = {
+    'name': 'BPP 1',
+    'bin_capacity': bin_capacity,
+    'item_weights': bpp_1_item_weights
+}
+bpp_2 = {
+    'name': 'BPP 2',
+    'bin_capacity': bin_capacity,
+    'item_weights': bpp_2_item_weights
+}
+bpp_3 = {
+    'name': 'BPP 3',
+    'bin_capacity': bin_capacity,
+    'item_weights': bpp_3_item_weights
+}
+bpp_4 = {
+    'name': 'BPP 4',
+    'bin_capacity': bin_capacity,
+    'item_weights': bpp_4_item_weights
+}
+bpp_5 = {
+    'name': 'BPP 5',
+    'bin_capacity': bin_capacity,
+    'item_weights': bpp_5_item_weights
+}
+problem_instances = [bpp_1, bpp_2, bpp_3, bpp_4, bpp_5]
+
+#Each chromosome is a list of bin indices corresponding to items
+def initialize_population(population_size, num_items, max_bins):
+    population = []
+    for _ in range(population_size):
+        # Assign each item to a random bin (from 0 to max_bins-1)
+        chromosome = [random.randint(0, max_bins-1) for _ in range(num_items)]
+        population.append(chromosome)
+    return population
+
+#Calculate the number of bins used
+def fitness(chromosome, item_weights, bin_capacity):
+    # Initialize bins as an empty dictionary. Keys are bin indices, values are the total weight in the bin.
+    bins = {}
+    for gene, (weight, quantity) in zip(chromosome, item_weights):
+        if gene not in bins:
+            bins[gene] = 0
+        # Add the total weight for this item (weight * quantity) to the corresponding bin
+        bins[gene] += weight * quantity
+
+    # Count the number of valid bins used (those that do not exceed the bin capacity)
+    valid_bins = sum(1 for total_weight in bins.values() if total_weight <= bin_capacity)
+
+    
+    return valid_bins
+
+
+def select_parent(population, fitnesses):
+    total_fitness = np.sum(fitnesses)
+    pick = np.random.rand() * total_fitness
+    current = 0
+    for i, individual in enumerate(population):
+        current += fitnesses[i]
+        if current > pick:
+            return individual
+
+# Crossover
+def crossover(parent1, parent2):
+    #  one-point crossover 
+    crossover_point = random.randint(1, len(parent1) - 1)
+    child1 = parent1[:crossover_point] + parent2[crossover_point:]
+    child2 = parent2[:crossover_point] + parent1[crossover_point:]
+    return child1, child2
+
+# Mutation
+def mutate(chromosome, mutation_rate, max_bins):
+    
+    for i in range(len(chromosome)):
+        if random.random() < mutation_rate:
+            chromosome[i] = random.randint(0, max_bins - 1)
+    return chromosome
+
+# Main Genetic Algorithm
+def genetic_algorithm(problem_instances):
+    for problem in problem_instances:
+        # Calculate the total number of items across all weights
+        num_items = sum(quantity for weight, quantity in problem['item_weights'])
+        
+        
+        max_bins =num_items
+        
+        # Initialize population
+        population = initialize_population(population_size, num_items, max_bins)
+        
+        best_fitness = float('inf')
+        best_solution = None
+        
+        for generation in range(max_generations):
+            new_population = []
+            
+            # Calculate fitness for each individual
+            fitnesses = [fitness(individual, problem['item_weights'], bin_capacity) for individual in population]
+            
+            # Check for a new best solution
+            for individual, fit in zip(population, fitnesses):
+                if fit < best_fitness:
+                    best_fitness = fit
+                    best_solution = individual
+
+                   # print(f"Generation {generation}: Best fitness = {best_fitness}")
+            
+            
+           
+            for _ in range(population_size // 2):
+                parent1 = select_parent(population, fitnesses)
+                parent2 = select_parent(population, fitnesses)
+                
+                child1, child2 = crossover(parent1, parent2)
+                child1 = mutate(child1, mutation_rate, max_bins)
+                child2 = mutate(child2, mutation_rate, max_bins)
+                
+                new_population.extend([child1, child2])
+            
+            population = new_population
+        
+        # Output the best solution
+        print(f"Best solution for {problem['name']} uses {best_fitness} bins.")
+
+# Parameters
+population_size = 1000
+mutation_rate = 0.1
+max_generations = 100
+crossover_rate = 0.75
+
+
+# Run GA
+genetic_algorithm(problem_instances)
