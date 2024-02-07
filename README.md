@@ -16,7 +16,7 @@ Execution Loop: Evolves the population for a number of generations defined by ma
 The code genrally follows this structure for all parts but some functions are different based on requirements (Specific Target String, Deceptive Fitness)
 
 #Collaboration 
-1.1 - Ganesh
-1.2 - Ganesh
-1.3 - Ben
-2 (Bin Packing Problem) - Collaborated on this. Both had input into all aspects of it.
+  1.1 - Ganesh
+  1.2 - Ganesh
+  1.3 - Ben
+  2 (Bin Packing Problem) - Collaborated on this. Both had input into all aspects of it.
